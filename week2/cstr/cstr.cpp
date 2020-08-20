@@ -18,6 +18,7 @@ public:
     array[n] = 0;
   }
 
+  // Copy constructor
   cstr(const char* str) {
     array = strdup(str);
     size = strlen(array);

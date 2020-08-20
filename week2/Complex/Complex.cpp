@@ -6,6 +6,8 @@ class Complex {
 private:
    double real;
    double imag;
+
+  int array[100];
 public:
   Complex():real(0), imag(0) {}
   
