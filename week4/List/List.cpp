@@ -101,22 +101,18 @@ int main()
   l.append("coffee");
   l.append("bread");
 
-  Item rm;
-  int i=1;
-  while(l.remove(rm))
-    {
-      std::cout << i++ << ". " << rm << std::endl;
-    }
-
-  l.append("milk");
-  l.append("eggs");
-  l.append("coffee");
-  l.append("bread");
-
   List::iterator it = l.begin();
 
   while(it!=l.end()) {
     Item &a = it.getItem();
+    std::cout << a << std::endl;
+    a[0] = 'X';
+    ++it;
+  }
+
+  it = l.begin();
+  while(it!=l.end()) {
+    Item a = it.getItem();
     std::cout << a << std::endl;
     ++it;
   }

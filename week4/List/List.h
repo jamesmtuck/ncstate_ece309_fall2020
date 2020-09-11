@@ -24,7 +24,7 @@ public:
     ListNode *node; // private, implementation details hidden
   public: 
     iterator(ListNode *n=nullptr) { node = n; }
-    Item& getItem() { return node->item; }
+    Item &getItem() { return node->item; }
     void next() { node = node->next; }
     bool operator==(const iterator &other) {
       return node == other.node;
