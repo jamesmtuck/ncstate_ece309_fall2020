@@ -1,0 +1,110 @@
+#include <iostream>
+#include <string>
+#include <random>
+
+template <typename Key, typename Hash = std::hash<Key>, class KeyEqual = std::equal_to<Key> >
+class ht {
+  
+  enum Status : int {
+     empty_since_start = -2,
+     empty_after_removal = -1,
+     valid = 0
+  };
+
+  struct ht_item {
+    Status status;
+    Key data;
+    ht_item():status(empty_since_start){}
+  };
+
+  ht_item *table;
+  size_t  size;
+  KeyEqual eq;
+  Hash h;
+  int probeDistance;
+
+  void resize();
+  
+public:
+  ht(size_t M=100, int d=10):size(M),probeDistance(d) {
+    table = new ht_item [M];
+  }
+
+  void insert(Key key) {
+    int index = h(key) % size;
+    int bucketsProbed=0;
+    while (bucketsProbed++ < probeDistance) { 
+      if (table[index].status < valid) {
+	table[index].data = key;
+	table[index].status = valid;
+	return;
+      }
+      index = (index+1)%size; // (% size) lets us wrap around to first index
+    }
+  }
+
+  bool find(Key key) {
+    int index = h(key) % size;
+    int bucketsProbed=0;
+    while (table[index].status != empty_since_start &&
+	   bucketsProbed++ < probeDistance) 
+      { 
+	if ( eq(table[index].data,key) )
+	  return true;
+	index = (index+1)%size; // (% size) lets us wrap around to first index
+      }
+   return false;
+  }
+
+  void remove(Key key) {
+    int index = h(key) % size;
+    int bucketsProbed=0;
+    while (table[index].status != empty_since_start
+	   && bucketsProbed++ < probeDistance) 
+      { 
+	if ( eq(table[index].data, key) )
+	  table[index].status = empty_after_removal;
+	
+	index = (index+1)%size; // (% size) lets us wrap around to first index
+      }
+  }
+};
+
+#include <functional>
+
+int  main()
+{
+  std::random_device rd;  //Will be used to obtain a seed for the random number engine
+  std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+  std::uniform_int_distribution<> distrib(1, 6);
+ 
+
+  ht<int> h;
+  ht<std::string> s;
+
+  int x;
+  std::hash<int*> hi;
+  std::hash<std::string> hstr;
+  
+  std::cout << hi(&x) << " " << (int64_t)&x << std::endl;
+  std::cout << hstr("hello world!") << std::endl;
+  std::cout << hstr("hello world?") << std::endl;
+  
+  h.insert(5);
+  h.insert(100);
+
+  s.insert("hello");
+  if (s.find("hello")) {
+    std::cout << "found hello!" << std::endl;
+  }
+
+  for(int i=0; i<100000; i++) {
+    h.insert( distrib(gen) % 10000 );
+    h.remove( distrib(gen) % 10000 );
+  }
+  
+
+  
+  
+  return 0;
+}
